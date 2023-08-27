@@ -10,7 +10,7 @@ This project provides a blueprint allowing to create fully parametric Cornell Bo
 
 A [Cornell Box](https://en.wikipedia.org/wiki/Cornell_box) is a common test case used by graphics professionals and researchers to measure the quality of a global illumination and light transport method, such as - in the case of Unreal Engine 5 - _Lumen_, _Path Tracing_, and _Static Lighting_.
 
-The purpose of this product is to be used as a tool in the Editor to analyze and understand Lumen behavior (direct lighting, specular lighting, global illumination, reflections/mirrors) in a tightly controlled environment: a Cornell Box. The main effect to observe is the color of the walls "bleeding" on nearby objects (diffuse interreflections), accuracy of soft-shadowing, and quality of specular reflections.
+The purpose of this product is to be used as a tool in the Editor to analyze and understand Lumen behavior (direct lighting, specular lighting, global illumination, reflections/mirrors) in a tightly controlled environment: a Cornell Box. The main effect to observe is the color of the walls "bleeding" on nearby objects (diffuse interreflections). Accuracy of soft-shadowing as well as quality of specular reflections can be analyzed too.
 
 ## Synopsis
 
@@ -20,15 +20,15 @@ The purpose of this product is to be used as a tool in the Editor to analyze and
 - [Screenshots](#screenshots)
 
 ## Usage
-The functionality is exposed in the Editor as a Blueprint Actor: to instantiate a new Cornell Box, simply drag and drop the __BP_ParametricCornellBox__ blueprint in the scene. The newly instanced Box is then configurable through dedicated attributes in the Details panel of the actor: dimensions, lighting setup, walls material and colors, and box contents.
+The functionality is exposed in the Editor as a Blueprint Actor: to instantiate a new Cornell Box, simply drag and drop the __BP_ParametricCornellBox__ blueprint in the scene. The newly instanced Box is then configurable through dedicated attributes in the _Details_ panel of the actor: dimensions, lighting setup, walls material and colors, and box contents.
 
 ![Img](Packaging/Images/BP_Icon.png)
 
-Boxes are fully reconstructed each time one of their attributes is updated, allowing for interactive modification within the Editor. This is done automatically by the blueprint construction script. 
+Boxes are fully reconstructed each time one of their attributes is updated, allowing for interactive modification from within the Editor. This is done automatically by the blueprint construction script. 
 
-Take a look at the [Attributes section](attributes) for a comprehensive list of features and available attributes. 
+Take a look at the [Attributes section](#attributes) for a comprehensive list of features and available attributes. 
 
-An example map is provided in the plugin, in the Maps folder: _Demo.umap_. This map showcases various features through different Cornell Boxes instanced in the scene.
+An example map is provided in the Maps folder: _Demo.umap_. This map showcases various features through different Cornell Boxes instanced in the scene.
 
 ![Img](Packaging/Images/Demo.png)
 
@@ -36,11 +36,11 @@ This blueprint is intended to be mostly used with real-time Lumen and Raytracing
 
 ## Attributes
 
-The following screenshot gives an overview of them:
+The following screenshot gives an overview:
 
 ![Img](Packaging/Images/Attributes.png)
 
-The individual breakdown of each attribute:
+The individual breakdown of each attribute is the following:
 
 ### Cornell Box - Geometry
 
@@ -68,31 +68,22 @@ Lighting is made of two distinct elements: a Rect Light, and an Source Surface k
   
   The following types are implemented:
   - _None_ : no lighting. This is to be used for scenarios where an external lighting source is wanted (for example, a sun light) ;
-  - _Rect Light_ : the Rect Light is enabled, along with the Source Surface configured to not emit any real light but yet appears to be (for cosmetic purposes only, it is possible to disable its visibility in advanced attributes) ;
+  - _Rect Light_ : the Rect Light is enabled, along with the Source Surface configured to NOT emit any real light but yet appears to be. This is for cosmetic purposes only, it is possible to disable its visibility in advanced attributes ;
   - _Emissive Surface_ : the Source Surface only, set to an Emissive material that emits real light in the scene. The emissive intensity is modulated proportionally to the emissive surface area, to keep the same intensity regarless of the surface size (like a Rect Light) ;
   - _Reflected Light_ : the Rect Light oriented towards the Source Surface set to a pure diffuse material, so that it is fully reflecting the received light toward the scene. This is roughly equivalent to an Emissive Surface ;
   - _Directional Light_ : a "local" directional light, implemented as the Rect Light set to a barn angle of zero, and a barn length set to the height of the box relative to the wall attachment side of the light.
   
-    Note that the _Directional Light_ type is NOT supported in Static Lighting scenarios, as the barn attributes are not taken into account by Lightmass for some reason. As such, this light type is partially disabled (intensity set to 1.0) if the mobility of the lighting system is set to Static or Stationary. This is to prevent unecessary overbrighting of the scene, as this kind of light typically require a strong intensity to have visible effects (like the sun).
-- __Light Side__
-
-  To which side of the box the light is attached: _Top_, _Bottom_, _Left_, _Right_, _Front_, _Back_
-- __Light Color__
-
-  Default is [1.0 1.0 0.9], that is, white with a really slight tint of yellow
-- __Light Intensity__
-
-  Value is in lumens.
-- __Light Width__ / __Light Height__
-
-  The Width and Height of the light, defining the visible light square. This is supported for all light types, including Emissive Surface.
-- __Light Position__
-  Offsets in X and Y of the origin of the light on the currently attached wall.
+Note that _Directional Light_ type is NOT supported in Static Lighting scenarios, as the barn attributes are not taken into account by Lightmass for some reason. As such, this light type is partially disabled (intensity set to 1.0) if the mobility of the lighting system is set to Static or Stationary. This is to prevent unecessary overbrighting of the scene, as this kind of light typically require a strong intensity to have visible effects (like the sun).
+- __Light Side__: to which side of the box the light is attached: _Top_, _Bottom_, _Left_, _Right_, _Front_, _Back_.
+- __Light Color__: default is [1.0 1.0 0.9], that is, white with a really slight tint of yellow.
+- __Light Intensity__: Value is in lumens. Note that it is computed more acurately than the default Unreal Engine behavior for the _Emissive Surface_ type.
+- __Light Width__ / __Light Height__: the physical width and height of the light source. This is supported for all light types, including the _Emissive Surface_ type.
+- __Light Position__: offsets in X and Y of the origin of the light on the currently attached wall.
 
 #### Advanced 
 
 - __Visible Rect Light Surface__: show/hide the Source Surface associated to Rect Light and Directional Light.
-- __Light Z Offset__: allows the light to be "detached" from the wall, for more advanced lighting setups.
+- __Light Z Offset__: allows the light to be "detached" from the wall, for more advanced lighting setups. By default there is a slight offset of 0.25 to prevent gemoetry confusion issues with the attachment wall.
 - __Light Rotation Offset__: rotation of the full light system, around the barycenter of the box. Use with caution, as if used in conjuction with light position, you might be a bit confused on the results.
 - __Light Attenuation Radius Scale__
 
@@ -106,7 +97,7 @@ Note that for Static Lighting, the geometry of the box (both walls and box conte
 - __Roughness__: defaults to 0.6 ;
 - __Metalness__: defaults to 0.3 ;
 - __Neutral Color__: color of the Top/Back/Bottom walls. Defaults to to mostly pure white [0.9 0.9 0.9] ;
-- __Left Color__ and __Right Color__: respectively the left and right walls color. Defaults to mostly pure Red [0.9 0 0] and strong Green [0 0.7 0].
+- __Left Color__ / __Right Color__: respectively the left and right walls color. Defaults to mostly pure Red [0.9 0 0] and strong Green [0 0.7 0].
 
 #### Advanced
 
@@ -118,7 +109,7 @@ Note that for Static Lighting, the geometry of the box (both walls and box conte
 - __Content Type__
 
   The following content types are implemented:
-  - _Empty_: the box is empty. You may add whatever you want inside the box to analyze its behavior with lighting ;
+  - _Empty_: the box is empty. You may add whatever you want inside the box to analyze its behavior with lighting;
   - _Classic Cubes_: the typical two cubes of a Cornell Box, clearly showing the left and right wall color bleeding effect ;
   - _Sample Shpere_: a simple Sphere, with similar color bleeding effect ;
   - _Calibration Spheres_: three spheres with Black/Chrome/White materials, for exposure calibration purposes ;
