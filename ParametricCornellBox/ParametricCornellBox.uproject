@@ -3,19 +3,11 @@
 	"EngineAssociation": "5.2",
 	"Category": "",
 	"Description": "",
-	"Plugins": [
-		{
-			"Name": "ModelingToolsEditorMode",
-			"Enabled": true,
-			"TargetAllowList": [
-				"Editor"
-			]
-		}
-	],
 	"TargetPlatforms": [
 		"Linux",
 		"LinuxArm64",
 		"Mac",
-		"Windows"
+		"Windows",
+		"HoloLens"
 	]
 }
