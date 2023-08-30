@@ -20,7 +20,7 @@ The purpose of this product is to be used as a tool in the Editor to analyze and
 - [Screenshots](#screenshots)
 
 ## Usage
-The functionality is exposed in the Editor as a Blueprint Actor: to instantiate a new Cornell Box, simply drag and drop the __BP_ParametricCornellBox__ blueprint in the scene. The newly instanced Box is then configurable through dedicated attributes in the _Details_ panel of the actor: dimensions, lighting setup, walls material and colors, and box contents.
+The functionality is exposed in the Editor as a Blueprint Actor: to instantiate a new Cornell Box, simply drag and drop the __BP_CornellBox__ blueprint (in the Blueprints subfolder) in the scene. The newly instanced Box is then configurable through dedicated attributes in the _Details_ panel of the actor: dimensions, lighting setup, walls material and colors, and box contents.
 
 ![Img](Packaging/Images/BP_Icon.png)
 
@@ -28,7 +28,7 @@ Boxes are fully reconstructed each time one of their attributes is updated, allo
 
 Take a look at the [Attributes section](#attributes) for a comprehensive list of features and available attributes. 
 
-An example map is provided in the Maps folder: _Demo.umap_. This map showcases various features through different Cornell Boxes instanced in the scene.
+An example map is provided in the Maps subfolder: _Showcase.umap_. This map showcases various features through different Cornell Boxes instanced in the scene.
 
 ![Img](Packaging/Images/Demo.png)
 
