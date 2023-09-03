@@ -3,6 +3,12 @@
 	"EngineAssociation": "5.2",
 	"Category": "",
 	"Description": "",
+	"Plugins": [
+		{
+			"Name": "GPULightmass",
+			"Enabled": true
+		}
+	],
 	"TargetPlatforms": [
 		"Linux",
 		"LinuxArm64",
