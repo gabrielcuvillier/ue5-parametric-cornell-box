@@ -36,7 +36,7 @@ An example map is provided in the Maps subfolder: _Showcase.umap_. This map show
 
 This blueprint is intended to be mostly used with real-time Lumen and Raytracing enabled (including raytraced shadows), as well as with Path Tracing. The typical use case is to compare the results between both real-time raytracing and non-realtime path tracing. It is nevertheless possible to use it with Static Lighting, by changing the mobility attribute in the "Advanced" section of "Lighting" attributes.
 
-For more accurate results with Lumen, be sure to enable Raytracing with Lumen (and enable Hit Lighting for Reflections), use Raytraced Shadows, and disable Lumen "Screen Traces". For better visual results with Static Lighting, use the "Production" lighting quality. Both CPU and GPU Lightmass works, although I find the latter gives less accurate results around the geometry edges.
+For more accurate results with Lumen, be sure to enable Raytracing with Lumen (and enable Hit Lighting for Reflections), use Raytraced Shadows, and disable Lumen "Screen Traces". For better visual results with Static Lighting, use the "Production" lighting quality and disable Lightmap compression. Both CPU and GPU Lightmass works, although I find the latter gives less accurate results around the geometry edges.
 
 ## Attributes
 
