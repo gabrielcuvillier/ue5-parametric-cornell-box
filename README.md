@@ -3,6 +3,8 @@ A Parametric Cornell Box Actor for Unreal Engine 5
 
 Supported Unreal Engine version: 5.2
 
+Also available on the Unreal Engine Marketplace here: https://unrealengine.com/marketplace/en-US/product/parametric-cornell-box
+
 ## Purpose
 This project provides a blueprint allowing to create fully parametric Cornell Boxes in the Unreal Editor.
 
