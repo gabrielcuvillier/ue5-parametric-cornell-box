@@ -69,13 +69,12 @@ Lighting is made of two distinct elements: a Rect Light, and an Source Surface k
 - __Light Type__
   
   The following types are implemented:
-  - _None_ : no lighting. This is to be used for scenarios where an external lighting source is wanted (for example, a sun light) ;
-  - _Rect Light_ : the Rect Light is enabled, along with the Source Surface configured to NOT emit any real light but yet appears to be. This is for cosmetic purposes only, it is possible to disable its visibility in advanced attributes ;
-  - _Emissive Surface_ : the Source Surface only, set to an Emissive material that emits real light in the scene. The emissive intensity is modulated proportionally to the emissive surface area, to keep the same intensity regarless of the surface size (like a Rect Light) ;
-  - _Reflected Light_ : the Rect Light oriented towards the Source Surface set to a pure diffuse material, so that it is fully reflecting the received light toward the scene. This is roughly equivalent to an Emissive Surface ;
-  - _Directional Light_ : a "local" directional light, implemented as the Rect Light set to a barn angle of zero, and a barn length set to the height of the box relative to the wall attachment side of the light.
+  - __None__ : no lighting. This is to be used for scenarios where an external lighting source is wanted (for example, a sun light) ;
+  - __Rect Light__ : the Rect Light is enabled, along with the Source Surface configured to NOT emit any real light but yet appears to be. This is for cosmetic purposes only, it is possible to disable its visibility in advanced attributes ;
+  - __Emissive Surface__ : the Source Surface only, set to an Emissive material that emits real light in the scene. The emissive intensity is modulated proportionally to the emissive surface area, to keep the same intensity regarless of the surface size (like a Rect Light) ;
+  - __Reflected Light__ : the Rect Light oriented towards the Source Surface set to a pure diffuse material, so that it is fully reflecting the received light toward the scene. This is roughly equivalent to an Emissive Surface ;
+  - __Directional Light__ : a "local" directional light, implemented as the Rect Light set to a barn angle of zero, and a barn length set to the height of the box relative to the wall attachment side of the light.
   
-Note that _Directional Light_ type is NOT supported in Static Lighting scenarios, as the barn attributes are not taken into account by Lightmass for some reason. As such, this light type is partially disabled (intensity set to 1.0) if the mobility of the lighting system is set to Static or Stationary. This is to prevent unecessary overbrighting of the scene, as this kind of light typically require a strong intensity to have visible effects (like the sun).
 - __Light Side__: to which side of the box the light is attached: _Top_, _Bottom_, _Left_, _Right_, _Front_, _Back_.
 - __Light Color__: default is [1.0 1.0 0.9], that is, white with a really slight tint of yellow.
 - __Light Intensity__: Value is in lumens. Note that it is computed more acurately than the default Unreal Engine behavior for the _Emissive Surface_ type.
@@ -92,7 +91,7 @@ Note that _Directional Light_ type is NOT supported in Static Lighting scenarios
 By default the attenuation radius of the underlaying Rect Light is computed automatically according to the dimensions of the box and the 3D scale of the actor, so that the box is always at least __within__ the radius (we take the largest box dimension as reference). It is nevertheless possible to tweak the radius to greater values by applying a scale to the final computed radius through this attribute.
 - __Light Mobility__: allows to change mobility of the lighting system. By default it is set to Movable, so that light does not produce any static lighting. Change it to Static (or Stationary) for Static Lighting scenarios.
 
-Note that for Static Lighting, the geometry of the box (both walls and box content) have their UVs correctly setup as well as a lightmap resolution of 256, which should be enough for human-scale scenes. For larger scenes, the lightmap resolution might need to be tweaked (you have to modify it directly in the individual meshes used by the blueprint).
+Note that for Static Lighting, the geometry of the box (both walls and box content) have their UVs correctly setup as well as a lightmap resolution of 512 for the walls and 256 for the content, which should be enough for human-scale scenes. For larger scenes, the lightmap resolution might need to be tweaked (you may modify the "Overriden Lightmap Res" attribute directly on the individual Wall components of the Cornell Box).
 
 ### Cornell Box - Material
 
@@ -111,11 +110,11 @@ Note that for Static Lighting, the geometry of the box (both walls and box conte
 - __Content Type__
 
   The following content types are implemented:
-  - _Empty_: the box is empty. You may add whatever you want inside the box to analyze its behavior with lighting;
-  - _Classic Cubes_: the typical two cubes of a Cornell Box, clearly showing the left and right wall color bleeding effect ;
-  - _Sample Shpere_: a simple Sphere, with similar color bleeding effect ;
-  - _Calibration Spheres_: three spheres with Black/Chrome/White materials, for exposure calibration purposes ;
-  - _User Static Mesh_: a user defined mesh, defined by the next attribute.
+  - __Empty__: the box is empty. You may add whatever you want inside the box to analyze its behavior with lighting;
+  - __Classic Cubes__: the typical two cubes of a Cornell Box, clearly showing the left and right wall color bleeding effect ;
+  - __Sample Sphere__: a simple Sphere, with similar color bleeding effect ;
+  - __Calibration Spheres__: three spheres with Black/Chrome/White materials, for exposure calibration purposes ;
+  - __User Static Mesh__: a user defined mesh, defined by the next attribute.
  
 - __Content User Mesh__: the mesh to use for the _User Static Mesh_ content type.
 
@@ -129,11 +128,22 @@ Note that for Static Lighting, the geometry of the box (both walls and box conte
 - __Sphere Material__: the material applied to the sphere for the _Sample Sphere_ content type ;
 - __Content Mobility__: allows to change mobility of the content geometry. By default, content have Static mobility, so that it is both compatible with dynamic and static lighting.
 
+### Cornell Box - Static Lighting Workarounds
+
+Static Lighting comes with a few limitations on its own: the Emissive light type is not properly supported (both with CPU and GPU lightmass), and the Directional light type does not behaves well (only with CPU lightmass, GPU lightmass is fine). A couple of additional advanced attributes are provided as workaround for these issues:
+
+#### Advanced
+
+- __Use Reflected Light for Emissive in Static Lighting__ (ON by default): automatically replace the Emissive light type by a Reflected Light if light Mobility have been set to Static or Stationary. Reflected Light is supported in static lighting scenarios, and both light types are roughly equivalent in terms of behavior.
+- __Disable Directional Light in Static Lighting__ (OFF by default): automatically disable the Directional Light type (replaced by None) if light Mobility have been set to Static or Stationary. With CPU Lightmass, the barn angle and length used by the Directional Light are not correctly taken into account, leading to incorrect results. Use this setting to disable such light type. Note that there is no issue with GPU Lightmass.
+
 ## Technical considerations
 
 - The Box is transformable in 3D through the usual transformation attribute of Actors. For scaling, while it works, it is nevertheless preferable to directly change the box dimension attributes ;
 
 - Geometry Scripting is not used, because dynamic meshes are not 100% functional with Lumen. Instead, the project relies on instancing and scaling of elementary static meshes (each individual wall, the emissive light source, the sample content, etc.).
+
+- It is not recommended to tweak attributes of the individual Cornell Box components (such as the Walls mesh components, the Rect Light component, etc.), as these components are dynamic and recomputed by the blueprint code at each box reconstruction (which would override your values). Though, for some specific settings such as the Overriden Lightmap Resolution, changing them works fine.
 
 - This project is done exclusively using Blueprints. While the code is not very difficult to implement and understand, some parts are in fact a little bit trickier than you might think: the lighting setup in particular, with a lot of parts relative to each other and various corner cases. This is not just a simple scaling of a predefined box (otherwise for example, you could not change the individual box dimensions while keeping the same wall thickness, and the Rect Light would not change its size).
 
