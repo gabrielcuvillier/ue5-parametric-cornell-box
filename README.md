@@ -1,7 +1,7 @@
 # ue5-parametric-cornell-box
 A Parametric Cornell Box Actor for Unreal Engine 5
 
-Supported Unreal Engine versions: 5.2, 5.3
+Supported Unreal Engine versions: 5.2, 5.3, 5.4
 
 Also available on the Unreal Engine Marketplace here: https://unrealengine.com/marketplace/en-US/product/parametric-cornell-box
 
